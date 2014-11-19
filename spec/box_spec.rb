@@ -1,4 +1,5 @@
-require './box'
+require 'spec_helper'
+require 'box'
 
 describe Box do
   subject { described_class.new(width: 2, depth: 7, height: 4) }

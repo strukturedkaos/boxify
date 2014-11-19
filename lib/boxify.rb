@@ -1,6 +1,3 @@
-require './box'
-require 'pry'
-
 class Boxify
 
   attr_reader :boxes, :container_height, :placed_boxes, :total_number_of_boxes

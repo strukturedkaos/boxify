@@ -1,4 +1,5 @@
-require './boxify'
+require 'spec_helper'
+require 'boxify'
 
 describe Boxify do
   let(:box1) { Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
