@@ -1,2 +1,6 @@
+require 'forwardable'
 require 'box'
+require 'space'
+require 'eligible_box'
+require 'placed_box'
 require 'boxify'

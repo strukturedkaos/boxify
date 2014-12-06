@@ -1,12 +1,13 @@
 class Boxify
 
-  attr_reader :boxes, :container_height, :placed_boxes, :total_number_of_boxes
+  attr_reader :boxes, :container_height, :placed_boxes, :total_number_of_boxes, :level
 
   def initialize(boxes:)
     @boxes = boxes
     @container_height = 0
     @total_number_of_boxes = boxes.total_count
     @placed_boxes = []
+    @level = 0
   end
 
   def container_width
@@ -17,37 +18,8 @@ class Boxify
     @container_depth ||= boxes.second_longest_edge
   end
 
-  def boxify
-    begin
-      box = find_starting_box
-      increment_height(box.height)
-      mark_box_as_placed(box)
-      place_boxes(box)
-    end while boxes.total_count != 0
-    true
-  end
-
-  def place_boxes(placed_box)
-    available_width = container_width - placed_box.width
-    available_depth = container_depth - placed_box.depth
-
-    # If the space is empty
-    return if available_width == 0 && available_depth == 0
-
-    # Find box that fits the space
-    eligible_box = find_eligible_box(available_width, available_depth)
-
-    # If there is no box that fits into this space return to Step 3
-    return unless eligible_box
-
-    # Determine the dimension of the space
-    # as = max(ak–ai, ak–aj ) and bs = bk–bi–bj
-    width = [container_width - placed_box.width, container_width - eligible_box.width].max
-    depth = container_depth - placed_box.depth - eligible_box.depth
-
-    mark_box_as_placed(eligible_box)
-
-    place_boxes(eligible_box) if boxes.total_count != 0
+  def container_area
+    @container_area ||= container_width * container_depth
   end
 
   def container_volume
@@ -55,21 +27,81 @@ class Boxify
   end
 
   def volume_of_placed_boxes
-    @placed_boxes.map(&:volume).inject(:+)
+    placed_boxes.map(&:volume).inject(:+)
   end
 
   def wasted_space_percentage
     (container_volume - volume_of_placed_boxes).to_f / container_volume * 100
   end
 
+  def pack
+    pack_level
+  end
+
+  def pack_level
+
+    # Increment level of box
+    increment_level
+
+    # Get biggest box as object
+    box = find_biggest_box_with_minimum_height
+
+    # Set container height (ck = ck + ci)
+    increment_height(box.height)
+
+    # Remove box from array (ki = ki - 1)
+    pack_box(box)
+
+    # Terminate if all boxes have been packed
+    return true if boxes.total_count == 0
+
+    # No space left (not even when rotated / length and width swapped)
+    if container_area - box.area <= 0
+      pack_level
+    else  # Space left, check if a package fits in
+      space = Space.new(width: container_width, depth: container_depth, height: container_height)
+      spaces = SpaceCollection.find_spaces_within_space(space: space, box: box)
+
+      # Fill each space with boxes
+      spaces.each do |space|
+        fill_space(space)
+      end
+
+      pack_level if boxes.total_count > 0
+    end
+  end
+
+
+  # Fills space with boxes recursively
+  def fill_space(space)
+    # Find box that fits into this space
+    eligible_box = find_eligible_box(space)
+
+    if eligible_box
+      pack_box(eligible_box)
+
+      spaces = SpaceCollection.find_spaces_within_space(space: space, box: eligible_box)
+
+      # Fill each space with boxes
+      spaces.each do |space|
+        fill_space(space)
+      end
+    end
+  end
+
   private
 
+  # Set container height (ck = ck + ci)
   def increment_height(height)
     @container_height += height
   end
 
-  def mark_box_as_placed(box)
-    placed_boxes.push(box)
+  def increment_level
+    @level += 1
+  end
+
+  def pack_box(box)
+    placed_boxes.push(PlacedBox.new(box: box, level: level))
     @boxes.delete(box)
   end
 
@@ -77,18 +109,12 @@ class Boxify
     (container_width - box.width == 0) && (container_depth - box.depth == 0)
   end
 
-  def find_eligible_box(available_width, available_depth)
-    eligible_boxes = boxes.find_eligible_boxes(available_width, available_depth)
-
-    if eligible_boxes.size > 1
-      # Return box with largest volume
-      eligible_boxes.sort{ |b| b.volume }.first
-    else
-      eligible_boxes.first
-    end
+  def find_eligible_box(space)
+    EligibleBox.find_best_fit(boxes: boxes.unplaced, space: space)
   end
 
-  def find_starting_box
+  # Find biggest (widest surface) box with minimum height
+  def find_biggest_box_with_minimum_height
     boxes.more_than_one_box_with_widest_surface_area? ? boxes.box_with_minimum_height : boxes.box_with_widest_surface_area
   end
 end
