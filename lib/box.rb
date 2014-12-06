@@ -16,6 +16,20 @@ class Box
   def volume
     @volume ||= height * width * depth
   end
+
+  def area
+    @area ||= width * depth
+  end
+
+  def rotated
+    @rotated ||= Box.new(width: height, depth: depth, height: width)
+  end
+
+  def rotate
+    temp_width = width
+    @width = height
+    @height = temp_width
+  end
 end
 
 class BoxCollection
@@ -26,7 +40,7 @@ class BoxCollection
     @boxes = boxes
   end
 
-  def available_boxes
+  def unplaced
     boxes.select{ |b| b.total_count > 0 }
   end
 
@@ -60,21 +74,21 @@ class BoxCollection
   end
 
   def more_than_one_box_with_widest_surface_area?
-    number_of_boxes = available_boxes.select {|b| b.surface_area == box_with_widest_surface_area.surface_area }.count
+    number_of_boxes = unplaced.select {|b| b.surface_area == box_with_widest_surface_area.surface_area }.count
     number_of_boxes > 1
   end
 
-  def find_eligible_boxes(available_width, available_height)
-    available_boxes.select{ |b| (b.width <= available_width) && (b.height <= available_height) }
+  def find_eligible_boxes(space)
+    unplaced.select{ |b| (b.width <= space.width) && (b.height <= space.height) }
   end
 
   private
 
   def boxes_sorted_by_surface_area
-    available_boxes.sort { |x,y| x.surface_area <=> y.surface_area }
+    unplaced.sort { |x,y| x.surface_area <=> y.surface_area }
   end
 
   def boxes_sorted_by_height
-    available_boxes.sort { |x,y| x.height <=> y.height }
+    unplaced.sort { |x,y| x.height <=> y.height }
   end
 end
