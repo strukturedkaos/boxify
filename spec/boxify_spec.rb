@@ -32,21 +32,27 @@ describe Boxify do
     end
   end
 
-  describe '#boxify' do
+  describe '#pack' do
     context 'when there is only one box' do
       let(:boxes) { [box1] }
       let(:box_collection) { BoxCollection.new(boxes: boxes) }
+      let(:expected_volume_of_placed_boxes) { boxes.map(&:volume).inject(:+) }
 
       subject { described_class.new(boxes: box_collection) }
 
-      it 'increments the container height' do
+      it 'calculates correct container height' do
         expected_height = box_collection.box_with_widest_surface_area.height
-        subject.boxify
+        subject.pack
         expect(subject.container_height).to eq(expected_height)
       end
 
       it 'returns true when starting box is only box' do
-        expect(subject.boxify).to be true
+        expect(subject.pack).to be true
+      end
+
+      it 'calculates correct volume of placed boxes' do
+        subject.pack
+        expect(subject.volume_of_placed_boxes).to eq(expected_volume_of_placed_boxes)
       end
     end
 
@@ -59,7 +65,7 @@ describe Boxify do
 
       subject { described_class.new(boxes: box_collection) }
 
-      before { subject.boxify }
+      before { subject.pack }
 
       it 'calculates correct container height' do
         expect(subject.container_height).to eq(expected_container_height)
