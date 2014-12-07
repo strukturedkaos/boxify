@@ -30,7 +30,7 @@ class Boxify
     increment_level
 
     # Get biggest box as object
-    box = find_biggest_box_with_minimum_height
+    box = boxes.find_biggest_box_with_minimum_height
 
     # Set container height (ck = ck + ci)
     increment_height(box.height)
@@ -93,10 +93,5 @@ class Boxify
 
   def find_eligible_box(space)
     EligibleBox.find_best_fit(boxes: boxes.unplaced, space: space)
-  end
-
-  # Find biggest (widest surface) box with minimum height
-  def find_biggest_box_with_minimum_height
-    boxes.more_than_one_box_with_widest_surface_area? ? boxes.box_with_minimum_height : boxes.box_with_widest_surface_area
   end
 end

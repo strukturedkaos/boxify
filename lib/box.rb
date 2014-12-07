@@ -71,6 +71,11 @@ class BoxCollection
     unplaced.select{ |b| (b.width <= space.width) && (b.height <= space.height) }
   end
 
+  # Find biggest (widest surface) box with minimum height
+  def find_biggest_box_with_minimum_height
+    more_than_one_box_with_widest_surface_area? ? box_with_minimum_height : box_with_widest_surface_area
+  end
+
   private
 
   def boxes_sorted_by_surface_area
