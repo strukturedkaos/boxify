@@ -13,7 +13,7 @@ class SpaceCollection
 
   attr_reader :spaces
 
-  def_delegator :@spaces, :each
+  def_delegators :@spaces, :each
 
   def initialize(spaces: spaces)
     @spaces = spaces

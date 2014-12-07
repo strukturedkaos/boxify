@@ -3,7 +3,7 @@ class PlacedBox
 
   attr_reader :box, :level
 
-  def_delegator :@box, :volume
+  def_delegators :@box, :volume
 
   def initialize(box:, level:)
     @box = box
