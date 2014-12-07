@@ -1,5 +1,6 @@
 class Box
-  attr_reader :width, :depth, :height
+  include Dimensionable
+
   attr_accessor :total_count
 
   def initialize(width:, depth:, height:, total_count: 1)
@@ -7,18 +8,6 @@ class Box
     @depth = depth
     @height = height
     @total_count = total_count
-  end
-
-  def surface_area
-    @surface_area ||= (2 * height * width) + (2 * height * depth) + (2 * width * depth)
-  end
-
-  def volume
-    @volume ||= height * width * depth
-  end
-
-  def area
-    @area ||= width * depth
   end
 
   def rotated

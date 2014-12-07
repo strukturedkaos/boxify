@@ -1,14 +1,10 @@
 class Space
-  attr_reader :width, :depth, :height
+  include Dimensionable
 
   def initialize(width:, depth:, height:)
     @width = width
     @depth = depth
     @height = height
-  end
-
-  def volume
-    @volume ||= height * width * depth
   end
 end
 

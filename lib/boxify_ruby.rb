@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'dimensionable'
 require 'box'
 require 'space'
 require 'eligible_box'
