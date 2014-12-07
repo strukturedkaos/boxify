@@ -1,41 +1,27 @@
 class Boxify
+  extend Forwardable
 
-  attr_reader :boxes, :container_height, :placed_boxes, :total_number_of_boxes, :level
+  STARTING_LEVEL = 0
+
+  attr_reader :boxes, :placed_boxes, :level, :container, :volume_of_placed_boxes
+
+  def_delegators :@container, :volume_of_placed_boxes, :wasted_space_percentage
+  def_delegator :@container, :height, :container_height
+  def_delegator :@container, :depth, :container_depth
+  def_delegator :@container, :width, :container_width
+  def_delegator :@container, :volume, :container_volume
 
   def initialize(boxes:)
+    @level = STARTING_LEVEL
     @boxes = boxes
-    @container_height = 0
-    @total_number_of_boxes = boxes.total_count
-    @placed_boxes = []
-    @level = 0
-  end
-
-  def container_width
-    @container_width ||= boxes.longest_edge
-  end
-
-  def container_depth
-    @container_depth ||= boxes.second_longest_edge
-  end
-
-  def container_area
-    @container_area ||= container_width * container_depth
-  end
-
-  def container_volume
-    container_width * container_height * container_depth
-  end
-
-  def volume_of_placed_boxes
-    placed_boxes.map(&:volume).inject(:+)
-  end
-
-  def wasted_space_percentage
-    (container_volume - volume_of_placed_boxes).to_f / container_volume * 100
+    @placed_boxes = PlacedBoxCollection.new
+    @container = Container.new(width: boxes.longest_edge, depth: boxes.second_longest_edge, height: 0)
   end
 
   def pack
     pack_level
+    container.placed_boxes = placed_boxes
+    true
   end
 
   def pack_level
@@ -56,10 +42,10 @@ class Boxify
     return true if boxes.total_count == 0
 
     # No space left (not even when rotated / length and width swapped)
-    if container_area - box.area <= 0
+    if container.area - box.area <= 0
       pack_level
     else  # Space left, check if a package fits in
-      space = Space.new(width: container_width, depth: container_depth, height: container_height)
+      space = Space.new(width: container.width, depth: container.depth, height: container.height)
       spaces = SpaceCollection.find_spaces_within_space(space: space, box: box)
 
       # Fill each space with boxes
@@ -93,7 +79,7 @@ class Boxify
 
   # Set container height (ck = ck + ci)
   def increment_height(height)
-    @container_height += height
+    @container.height += height
   end
 
   def increment_level
@@ -101,12 +87,8 @@ class Boxify
   end
 
   def pack_box(box)
-    placed_boxes.push(PlacedBox.new(box: box, level: level))
-    @boxes.delete(box)
-  end
-
-  def container_width_and_depth_match_box?(box)
-    (container_width - box.width == 0) && (container_depth - box.depth == 0)
+    placed_boxes.add(box: box, level: level)
+    boxes.delete(box)
   end
 
   def find_eligible_box(space)
