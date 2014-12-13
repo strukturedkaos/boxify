@@ -1,7 +1,8 @@
 require 'spec_helper'
 require 'boxify'
+require 'pry'
 
-describe Boxify do
+describe Pack do
   let(:box1) { Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
   let(:box2) { Box.new(width: 8, depth: 10, height: 3, total_count: 1) }
   let(:box3) { Box.new(width: 5, depth: 4, height: 10, total_count: 1) }
