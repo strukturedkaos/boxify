@@ -2,13 +2,13 @@ require 'spec_helper'
 require 'boxify'
 require 'pry'
 
-describe Pack do
-  let(:box1) { Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
-  let(:box2) { Box.new(width: 8, depth: 10, height: 3, total_count: 1) }
-  let(:box3) { Box.new(width: 5, depth: 4, height: 10, total_count: 1) }
-  let(:box4) { Box.new(width: 2, depth: 2, height: 2, total_count: 1) }
+describe Boxify::Pack do
+  let(:box1) { Boxify::Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
+  let(:box2) { Boxify::Box.new(width: 8, depth: 10, height: 3, total_count: 1) }
+  let(:box3) { Boxify::Box.new(width: 5, depth: 4, height: 10, total_count: 1) }
+  let(:box4) { Boxify::Box.new(width: 2, depth: 2, height: 2, total_count: 1) }
   let(:boxes) { [box1, box2, box3, box4] }
-  let(:box_collection) { BoxCollection.new(boxes: boxes) }
+  let(:box_collection) { Boxify::BoxCollection.new(boxes: boxes) }
 
   describe 'initial state' do
 
@@ -36,7 +36,7 @@ describe Pack do
   describe '#pack' do
     context 'when there is only one box' do
       let(:boxes) { [box1] }
-      let(:box_collection) { BoxCollection.new(boxes: boxes) }
+      let(:box_collection) { Boxify::BoxCollection.new(boxes: boxes) }
       let(:expected_volume_of_placed_boxes) { boxes.map(&:volume).inject(:+) }
 
       subject { described_class.new(boxes: box_collection) }
@@ -59,7 +59,7 @@ describe Pack do
 
     context 'when there is more than one box' do
       let(:boxes) { [box1, box2, box3, box4] }
-      let(:box_collection) { BoxCollection.new(boxes: boxes) }
+      let(:box_collection) { Boxify::BoxCollection.new(boxes: boxes) }
       let(:expected_container_height) { 13 }
       let(:expected_container_volume) { 1040 }
       let(:expected_volume_of_placed_boxes) { boxes.map(&:volume).inject(:+) }

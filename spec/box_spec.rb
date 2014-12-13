@@ -1,7 +1,6 @@
 require 'spec_helper'
-require 'box'
 
-describe Box do
+describe Boxify::Box do
   subject { described_class.new(width: 2, depth: 7, height: 4) }
 
   describe '#surface_area' do
@@ -20,22 +19,22 @@ describe Box do
 end
 
 
-describe BoxCollection do
-  let(:box1) { Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
-  let(:box2) { Box.new(width: 8, depth: 10, height: 3, total_count: 1) }
-  let(:box3) { Box.new(width: 5, depth: 4, height: 10, total_count: 1) }
-  let(:box4) { Box.new(width: 2, depth: 2, height: 2, total_count: 1) }
+describe Boxify::BoxCollection do
+  let(:box1) { Boxify::Box.new(width: 2, depth: 7, height: 4, total_count: 1) }
+  let(:box2) { Boxify::Box.new(width: 8, depth: 10, height: 3, total_count: 1) }
+  let(:box3) { Boxify::Box.new(width: 5, depth: 4, height: 10, total_count: 1) }
+  let(:box4) { Boxify::Box.new(width: 2, depth: 2, height: 2, total_count: 1) }
 
   subject { described_class.new(boxes: [box1, box2, box3, box4]) }
 
-  describe '#available_boxes' do
-    let(:box5) { Box.new(width: 18, depth: 18, height: 19, total_count: 0) }
+  describe '#unplaced' do
+    let(:box5) { Boxify::Box.new(width: 18, depth: 18, height: 19, total_count: 0) }
 
     subject { described_class.new(boxes: [box1, box2, box3, box4, box5]) }
 
     it 'only returns boxes with a count greater than 0' do
-      expect(subject.available_boxes).to_not include(box5)
-      expect(subject.available_boxes.size).to eq(4)
+      expect(subject.unplaced).to_not include(box5)
+      expect(subject.unplaced.size).to eq(4)
     end
   end
 
@@ -71,8 +70,8 @@ describe BoxCollection do
     end
 
     context 'when 2 boxes both have the widest surface area' do
-      let(:box1) { Box.new(width: 2, depth: 8, height: 10, total_count: 1) }
-      let(:box2) { Box.new(width: 8, depth: 10, height: 2, total_count: 1) }
+      let(:box1) { Boxify::Box.new(width: 2, depth: 8, height: 10, total_count: 1) }
+      let(:box2) { Boxify::Box.new(width: 8, depth: 10, height: 2, total_count: 1) }
 
       subject { described_class.new(boxes: [box1, box2]) }
 

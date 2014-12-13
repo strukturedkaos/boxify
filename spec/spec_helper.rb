@@ -1,1 +1,1 @@
-require File.expand_path("../../lib/boxify_ruby", __FILE__)
+require File.expand_path("../../lib/boxify", __FILE__)
