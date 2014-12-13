@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = s.summary
   s.authors     = ["Don Pottinger"]
   s.email       = 'don.pottinger@gmail.com'
-  s.files       = ["lib/boxify.rb"]
+  s.files       = Dir["lib/**/*"]
   s.homepage    = 'https://github.com/strukturedkaos/boxify'
   s.license     = 'MIT'
 end
