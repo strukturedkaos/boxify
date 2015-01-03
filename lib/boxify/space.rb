@@ -16,7 +16,7 @@ module Boxify
 
     def_delegators :@spaces, :each
 
-    def initialize(spaces: spaces)
+    def initialize(spaces:)
       @spaces = spaces
     end
 

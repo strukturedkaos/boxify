@@ -26,7 +26,7 @@ module Boxify
 
     attr_reader :boxes
 
-    def initialize(boxes: boxes)
+    def initialize(boxes:)
       @boxes = boxes
     end
 
